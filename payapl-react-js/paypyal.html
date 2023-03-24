@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="smart-button-container" style="display: flex; align-items: center; flex-direction: column; justify-content: center; gap: 5rem;height: 100vh; width: 100%;">
+        <h1>Bussiness Account Sender</h1>
+        <div style="width: 50rem;">
+            <div id="paypal-button-container"></div>
+        </div>
+    </div>
+    <script
+        src="https://www.paypal.com/sdk/js?client-id=AbpvQYlZ1bu397dPCX9e6TPaZoBG4JYwwpM__uxoBnu4HMVsFGPdB9H_Cuq3AoB-NdwuxYkfJ9kyU9F2&enable-funding=venmo&currency=USD"
+        data-sdk-integration-source="button-factory"></script>
+    <script>
+        function initPayPalButton() {
+            paypal.Buttons({
+                style: {
+                    shape: 'rect',
+                    color: 'gold',
+                    layout: 'vertical',
+                    label: 'paypal',
+                },
+
+                createOrder: function (data, actions) {
+                    return actions.order.create({
+                        purchase_units: [
+                            {
+                                "amount": {
+                                    "currency_code": "USD",
+                                    "value": 1
+                                },
+                            },
+                            {
+                                "amount": {
+                                    "currency_code": "USD",
+                                    "value": 1
+                                },
+                                "payee": {
+                                    "email_address": "sb-iu39y21859644@business.example.com" // 2nd Person
+                                },
+                            }
+                        ]
+                    });
+                },
+
+                onApprove: function (data, actions) {
+                    return actions.order.capture().then(function (orderData) {
+
+                        // Full available details
+                        console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+
+                        // Show a success message within this page, e.g.
+                        const element = document.getElementById('paypal-button-container');
+                        element.innerHTML = '';
+                        element.innerHTML = '<h3>Thank you for your payment!</h3>';
+
+                        // Or go to another URL:  actions.redirect('thank_you.html');
+
+                    });
+                },
+
+                onError: function (err) {
+                    console.log(err);
+                }
+            }).render('#paypal-button-container');
+        }
+        initPayPalButton();
+    </script>
+</body>
+
+</html>
